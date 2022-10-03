@@ -22,9 +22,12 @@ class array(object):
 
         self.fun = fun
         self.args = args
-        self._shape = shape
-        self.ndim = len(shape)
-        self.size = np.prod(shape)
+        if isinstance(shape, int):
+            self._shape = (shape,)
+        else:
+            self._shape = tuple(shape)
+        self.ndim = len(self.shape)
+        self.size = np.prod(self.shape)
 
     def __iter__(self):
         for r in range(self.shape[0]):
