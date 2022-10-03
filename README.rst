@@ -21,7 +21,7 @@ Usage
 -----
 Functional arrays are instantiated by passing it a shape and a function that 
 must return each element of the matrix given the index of the element and a set
- of arguments. The given function must therefore obey the format fun(*index, *args).
+of arguments. The given function must therefore obey the format ``fun(*index, *args)``.
 
 .. code-block:: python
 
