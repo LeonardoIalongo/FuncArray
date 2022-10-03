@@ -3,8 +3,7 @@ History
 =======
 
 
-0.0.0 (2022-10-01)
+0.0.1 (2022-10-03)
 ------------------
-
-* Project started
+* First proof of concept release!
 
