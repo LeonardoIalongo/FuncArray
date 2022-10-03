@@ -1,9 +1,29 @@
 from funcarray import array
 from numba import njit
 import numpy as np
+from funcarray.utils import to_shape_index
+from funcarray.utils import to_flat_index
 
 N = 10
 range_arr = np.arange(N**2).reshape((N, N))
+
+
+class TestReshape():
+    def test_indexing_coherence(self):
+        shape = (3, 4, 5, 6)
+        # C ordering
+        for index in np.ndindex(shape):
+            pos = to_flat_index(index, shape, order='C')
+            new_index = tuple(to_shape_index(pos, shape, order='C'))
+            assert index == new_index
+
+    def test_1d_to_2d(self):
+        @njit
+        def foo(i):
+            return float(i)
+
+        a = array(N**2, foo)
+        assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
 
 
 class TestCompletion():
