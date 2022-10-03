@@ -10,7 +10,7 @@ class array(object):
     iterating over its elements. It also allows to have arrays that would not 
     fit in memory but can be handled as if they were.
     """
-    def __init__(self, shape, fun, *args):
+    def __init__(self, shape, fun, *args, dtype='f8'):
         """Return a FuncArray object. 
 
         :param fun: function that computes each element of the array.
@@ -21,6 +21,7 @@ class array(object):
         self.fun = fun
         self.args = args
         self.shape = shape
+        self.dtype = dtype
         self.ndim = len(shape)
 
     def __iter__(self):
@@ -43,4 +44,16 @@ class array(object):
         res = 0
         for index in np.ndindex(shape):
             res += fun(*index, *args)
+        return res
+
+    def to_numpy(self):
+        return self._to_numpy(
+            self.fun, self.shape, self.args, dtype=self.dtype)
+
+    @staticmethod
+    @njit
+    def _to_numpy(fun, shape, args, dtype):
+        res = np.empty(shape, dtype=dtype)
+        for index in np.ndindex(shape):
+            res[index] = fun(*index, *args)
         return res
