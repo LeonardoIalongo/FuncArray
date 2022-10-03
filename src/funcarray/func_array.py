@@ -1,4 +1,4 @@
-from numba import njit
+from numba import jit
 import numpy as np
 
 
@@ -39,7 +39,7 @@ class array(object):
         return self._sum(self.fun, self.shape, self.args)
 
     @staticmethod
-    @njit
+    @jit(nopython=True)
     def _sum(fun, shape, args):
         res = 0
         for index in np.ndindex(shape):
@@ -51,7 +51,7 @@ class array(object):
             self.fun, self.shape, self.args, dtype=self.dtype)
 
     @staticmethod
-    @njit
+    @jit(nopython=True)
     def _to_numpy(fun, shape, args, dtype):
         res = np.empty(shape, dtype=dtype)
         for index in np.ndindex(shape):

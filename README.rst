@@ -26,9 +26,11 @@ must return each element of the matrix given the index of the element and a set
 .. code-block:: python
 
     from funcarray import array
+    from numba import jit
     import numpy as np
     from numpy.random import default_rng
 
+    @jit(nopython=True)
     def fun(i, j, x, y):
         return x[i]*y[j]
 
