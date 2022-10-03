@@ -6,8 +6,9 @@ def to_flat_index(index, shape, order='C'):
     # Compute cumulative size
     ndim = len(shape)
     csize = [1]
-    for x in shape[1:]:
+    for x in shape[::-1]:
         csize.append(x*csize[-1])
+    csize = csize[:-1]
     if order == 'C':
         csize.reverse()
     elif order != 'F':
@@ -26,8 +27,9 @@ def to_shape_index(pos, shape, order='C'):
     # Compute cumulative size
     ndim = len(shape)
     csize = [1]
-    for x in shape[1:]:
+    for x in shape[::-1]:
         csize.append(x*csize[-1])
+    csize = csize[:-1]
     if order == 'C':
         csize.reverse()
     elif order != 'F':
