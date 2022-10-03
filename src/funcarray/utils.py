@@ -11,7 +11,7 @@ def to_flat_index(index, shape, order='C'):
     if order == 'C':
         csize.reverse()
     elif order != 'F':
-        raise ValueError('Order can be C or F, not {}'.format(order))
+        raise ValueError('Order can be C or F.')
 
     # Compute flat position
     pos = 0
@@ -31,17 +31,17 @@ def to_shape_index(pos, shape, order='C'):
     if order == 'C':
         csize.reverse()
     elif order != 'F':
-        raise ValueError('Order can be C or F, not {}'.format(order))
+        raise ValueError('Order can be C or F.')
         
     # Compute new index
-    index = tuple()
+    index = list(shape)
     if order == 'C':
         for i in range(ndim):
-            index += (int(pos/csize[i]),)
+            index[i] = int(pos/csize[i])
             pos = pos % csize[i]
     elif order == 'F':
         for i in range(ndim - 1, -1, -1):
-            index = (int(pos/csize[i]),) + index
+            index[i] = int(pos/csize[i])
             pos = pos % csize[i]
         
     return index
