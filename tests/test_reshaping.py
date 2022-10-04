@@ -16,12 +16,18 @@ class TestReshape():
             new_index = tuple(to_shape_index(pos, shape, order='C'))
             assert index == new_index
 
-    def test_1d_to_2d(self):
-        def foo(i):
-            return float(i)
+        # F ordering
+        for index in np.ndindex(shape):
+            pos = to_flat_index(index, shape, order='F')
+            new_index = tuple(to_shape_index(pos, shape, order='F'))
+            assert index == new_index
 
-        a = array(N**2, foo)
-        assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
+    # def test_1d_to_2d(self):
+    #     def foo(i):
+    #         return float(i)
+
+    #     a = array(N**2, foo)
+    #     assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
 
 
 class TestCompletion():

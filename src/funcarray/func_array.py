@@ -68,7 +68,7 @@ class array(object):
             return self
 
         # Create new funcarray with changed indexing
-        def new_fun(index, args):
+        def new_fun(index, *args):
             prev_index = to_shape_index(
                 to_flat_index(index, shape, order=order),
                 self.shape, order)
