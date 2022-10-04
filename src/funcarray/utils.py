@@ -7,6 +7,9 @@ def to_flat_index(index, shape, order='C'):
         msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
         raise IndexError(msg)
 
+    # If index is negative convert it to positive equivalent
+    index = tuple([s + i if i < 0 else i for i, s in zip(index, shape)])
+
     # Compute cumulative size
     ndim = len(shape)
     csize = [1]
@@ -38,6 +41,10 @@ def to_shape_index(pos, shape, order='C'):
     if (pos >= size) or (-pos > size):
         msg = 'Position {} out of bounds for shape {}.'.format(pos, shape)
         raise IndexError(msg)
+
+    # If index is negative convert it to positive equivalent
+    if pos < 0:
+        pos = pos + size
 
     # Compute cumulative size
     ndim = len(shape)
