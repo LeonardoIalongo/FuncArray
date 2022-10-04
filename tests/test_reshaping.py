@@ -1,5 +1,4 @@
 from funcarray import array
-from numba import njit
 import numpy as np
 from funcarray.utils import to_shape_index
 from funcarray.utils import to_flat_index
@@ -18,7 +17,6 @@ class TestReshape():
             assert index == new_index
 
     def test_1d_to_2d(self):
-        @njit
         def foo(i):
             return float(i)
 
@@ -28,7 +26,6 @@ class TestReshape():
 
 class TestCompletion():
     def test_zero_fill(self):
-        @njit
         def foo(i, j):
             return 0.0
 
@@ -36,7 +33,6 @@ class TestCompletion():
         assert np.all(a.to_numpy() == np.zeros((N, N)))
 
     def test_ones_fill(self):
-        @njit
         def foo(i, j):
             return 1.0
 
@@ -44,7 +40,6 @@ class TestCompletion():
         assert np.all(a.to_numpy() == np.ones((N, N)))
 
     def test_range_fill(self):
-        @njit
         def foo(i, j):
             return float(i*N + j)
 

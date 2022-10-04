@@ -30,6 +30,5 @@ setup(
     packages=['funcarray'],
     package_dir={'': 'src'},
     install_requires=["numpy>=1.15",
-                      "numba>=0.55"
                       ],
     )

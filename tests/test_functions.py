@@ -1,5 +1,4 @@
 from funcarray import array
-from numba import njit
 import numpy as np
 
 
@@ -8,7 +7,6 @@ N = 10
 
 class TestElementSum():
     def test_zero_sum(self):
-        @njit
         def foo(i, j):
             return 0.0
 
@@ -16,7 +14,6 @@ class TestElementSum():
         assert a.sum() == 0.0
 
     def test_ones_sum(self):
-        @njit
         def foo(i, j):
             return 1.0
 
@@ -24,7 +21,6 @@ class TestElementSum():
         assert a.sum() == N**2
 
     def test_range_sum(self):
-        @njit
         def foo(i, j):
             return float(i + j)
 

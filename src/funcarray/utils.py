@@ -1,7 +1,5 @@
-from numba import jit
 
 
-@jit(nopython=True)
 def to_flat_index(index, shape, order='C'):
     # Compute cumulative size
     ndim = len(shape)
@@ -22,7 +20,6 @@ def to_flat_index(index, shape, order='C'):
     return pos
         
 
-@jit(nopython=True)
 def to_shape_index(pos, shape, order='C'):
     # Compute cumulative size
     ndim = len(shape)

@@ -1,4 +1,3 @@
-from numba import jit
 import numpy as np
 from .utils import to_shape_index
 from .utils import to_flat_index
@@ -69,7 +68,6 @@ class array(object):
             return self
 
         # Create new funcarray with changed indexing
-        @jit(nopython=True)
         def new_fun(index, args):
             prev_index = to_shape_index(
                 to_flat_index(index, shape, order=order),
@@ -81,26 +79,15 @@ class array(object):
     def sum(self):
         """ Sum all elements of the array.
         """
-        return self._sum(self.fun, self.shape, self.args)
-
-    @staticmethod
-    @jit(nopython=True)
-    def _sum(fun, shape, args):
         res = 0
-        for index in np.ndindex(shape):
-            res += fun(*index, *args)
+        for index in np.ndindex(self.shape):
+            res += self.fun(*index, *self.args)
         return res
 
     def to_numpy(self):
         """ Return a numpy copy of the array.
         """
-        return self._to_numpy(
-            self.fun, self.shape, self.args)
-
-    @staticmethod
-    @jit(nopython=True)
-    def _to_numpy(fun, shape, args):
-        res = np.empty(shape)
-        for index in np.ndindex(shape):
-            res[index] = fun(*index, *args)
+        res = np.empty(self.shape)
+        for index in np.ndindex(self.shape):
+            res[index] = self.fun(*index, *self.args)
         return res
