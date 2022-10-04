@@ -1,6 +1,12 @@
+import numpy as np
 
 
 def to_flat_index(index, shape, order='C'):
+    # Ensure index is compatible with shape
+    if np.any([i >= s for i, s in zip(index, shape)]):
+        msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
+        raise IndexError(msg)
+
     # Compute cumulative size
     ndim = len(shape)
     csize = [1]
@@ -27,6 +33,11 @@ def to_flat_index(index, shape, order='C'):
         
 
 def to_shape_index(pos, shape, order='C'):
+    # Ensure position is compatible with shape
+    if pos >= np.prod(shape):
+        msg = 'Position {} out of bounds for shape {}.'.format(pos, shape)
+        raise IndexError(msg)
+
     # Compute cumulative size
     ndim = len(shape)
     csize = [1]
