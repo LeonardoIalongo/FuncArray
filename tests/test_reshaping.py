@@ -55,19 +55,19 @@ class TestReshape():
         msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
         # C ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            pos = to_flat_index(index, shape, order='C')
+            to_flat_index(index, shape, order='C')
         # F ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            pos = to_flat_index(index, shape, order='F')
+            to_flat_index(index, shape, order='F')
 
         pos = 6
         msg = 'Position {} out of bounds for shape {}.'.format(pos, shape)
         # C ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            new_index = to_shape_index(pos, shape, order='C')
+            to_shape_index(pos, shape, order='C')
         # F ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            new_index = to_shape_index(pos, shape, order='F')
+            to_shape_index(pos, shape, order='F')
 
     def test_negative_out_of_bounds_index(self):
         shape = (2, 3, 1)
@@ -76,29 +76,29 @@ class TestReshape():
         msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
         # C ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            pos = to_flat_index(index, shape, order='C')
+            to_flat_index(index, shape, order='C')
         # F ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            pos = to_flat_index(index, shape, order='F')
+            to_flat_index(index, shape, order='F')
 
         index = (0, -4, 0)
 
         msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
         # C ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            pos = to_flat_index(index, shape, order='C')
+            to_flat_index(index, shape, order='C')
         # F ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            pos = to_flat_index(index, shape, order='F')
+            to_flat_index(index, shape, order='F')
 
         pos = -7
         msg = 'Position {} out of bounds for shape {}.'.format(pos, shape)
         # C ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            new_index = to_shape_index(pos, shape, order='C')
+            to_shape_index(pos, shape, order='C')
         # F ordering    
         with pytest.raises(IndexError, match=re.escape(msg)):
-            new_index = to_shape_index(pos, shape, order='F')
+            to_shape_index(pos, shape, order='F')
 
     def test_indexing_coherence_vector(self):
         shape = (5, )
@@ -163,6 +163,23 @@ class TestReshape():
             pos = to_flat_index(neg_index, shape, order='F')
             new_index = to_shape_index(pos - size, shape, order='F')
             assert index == new_index
+
+    # def test_incompatible_shapes(self):
+    #     def foo(i):
+    #         return float(i)
+
+    #     a = array(N**3, foo)
+    #     assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
+
+    def test_1d_to_2d(self):
+        def foo(i):
+            return float(i)
+        a = array(N**2, foo)
+        assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
+
+        # Test in place reshape
+        a.shape = (N, N)
+        assert np.all(a.to_numpy() == range_arr)
 
 
 class TestCompletion():

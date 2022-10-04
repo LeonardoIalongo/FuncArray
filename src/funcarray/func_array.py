@@ -41,7 +41,8 @@ class array(object):
 
     def set_shape(self, shape):
         """See `reshape`."""
-        self.reshape(shape, copy=False).asformat(self.format)
+        new_array = self.reshape(shape)
+        self.__dict__ = new_array.__dict__
 
     def get_shape(self):
         """Get shape of a array."""
@@ -61,20 +62,23 @@ class array(object):
         
         # Ensure shape is compatible
         if np.prod(shape) != self.size:
-            raise ValueError('cannot reshape array of size {} into shape {}'
+            raise ValueError('Cannot reshape array of size {} into shape {}'
                              .format(self.size, shape))
 
         if shape == self.shape:
             return self
 
-        # Create new funcarray with changed indexing
-        def new_fun(index, *args):
+        # Create new array function with changed indexing
+        def new_fun(*nargs):
+            ndim = len(shape)
+            index = nargs[:ndim]
+            args = nargs[ndim:]
             prev_index = to_shape_index(
                 to_flat_index(index, shape, order=order),
-                self.shape, order)
+                self.shape, order=order)
             return self.fun(*prev_index, *args)
 
-        return self.__class__(shape, new_fun, self.args)
+        return self.__class__(shape, new_fun, *self.args)
 
     def sum(self):
         """ Sum all elements of the array.
