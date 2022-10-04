@@ -69,6 +69,37 @@ class TestReshape():
         with pytest.raises(IndexError, match=re.escape(msg)):
             new_index = to_shape_index(pos, shape, order='F')
 
+    def test_negative_out_of_bounds_index(self):
+        shape = (2, 3, 1)
+        index = (0, 1, -2)
+
+        msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
+        # C ordering    
+        with pytest.raises(IndexError, match=re.escape(msg)):
+            pos = to_flat_index(index, shape, order='C')
+        # F ordering    
+        with pytest.raises(IndexError, match=re.escape(msg)):
+            pos = to_flat_index(index, shape, order='F')
+
+        index = (0, -4, 0)
+
+        msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
+        # C ordering    
+        with pytest.raises(IndexError, match=re.escape(msg)):
+            pos = to_flat_index(index, shape, order='C')
+        # F ordering    
+        with pytest.raises(IndexError, match=re.escape(msg)):
+            pos = to_flat_index(index, shape, order='F')
+
+        pos = -7
+        msg = 'Position {} out of bounds for shape {}.'.format(pos, shape)
+        # C ordering    
+        with pytest.raises(IndexError, match=re.escape(msg)):
+            new_index = to_shape_index(pos, shape, order='C')
+        # F ordering    
+        with pytest.raises(IndexError, match=re.escape(msg)):
+            new_index = to_shape_index(pos, shape, order='F')
+
     def test_indexing_coherence_vector(self):
         shape = (5, )
         # C ordering
@@ -95,6 +126,42 @@ class TestReshape():
         for index in np.ndindex(shape):
             pos = to_flat_index(index, shape, order='F')
             new_index = to_shape_index(pos, shape, order='F')
+            assert index == new_index
+
+    def test_negative_index_vector(self):
+        shape = (10, )
+        # C ordering
+        for index in range(shape[0]):
+            neg_pos = index - shape[0]
+            pos = to_flat_index((neg_pos, ), shape, order='C')
+            assert pos == index
+            new_index = to_shape_index(neg_pos, shape, order='C')
+            assert (index, ) == new_index
+
+        # F ordering
+        for index in range(shape[0]):
+            neg_pos = index - shape[0]
+            pos = to_flat_index((neg_pos, ), shape, order='F')
+            assert pos == index
+            new_index = to_shape_index(neg_pos, shape, order='F')
+            assert (index, ) == new_index
+
+    def test_negative_index(self):
+        shape = (7, 2, 3)
+        size = np.prod(shape)
+
+        # C ordering
+        for index in np.ndindex(shape):
+            neg_index = tuple([i - s for i, s in zip(index, shape)])
+            pos = to_flat_index(neg_index, shape, order='C')
+            new_index = to_shape_index(pos - size, shape, order='C')
+            assert index == new_index
+
+        # F ordering
+        for index in np.ndindex(shape):
+            neg_index = tuple([i - s for i, s in zip(index, shape)])
+            pos = to_flat_index(neg_index, shape, order='F')
+            new_index = to_shape_index(pos - size, shape, order='F')
             assert index == new_index
 
 

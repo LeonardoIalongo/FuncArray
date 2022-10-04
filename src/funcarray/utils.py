@@ -3,7 +3,7 @@ import numpy as np
 
 def to_flat_index(index, shape, order='C'):
     # Ensure index is compatible with shape
-    if np.any([i >= s for i, s in zip(index, shape)]):
+    if np.any([(i >= s) or (-i > s) for i, s in zip(index, shape)]):
         msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
         raise IndexError(msg)
 
@@ -34,7 +34,8 @@ def to_flat_index(index, shape, order='C'):
 
 def to_shape_index(pos, shape, order='C'):
     # Ensure position is compatible with shape
-    if pos >= np.prod(shape):
+    size = np.prod(shape)
+    if (pos >= size) or (-pos > size):
         msg = 'Position {} out of bounds for shape {}.'.format(pos, shape)
         raise IndexError(msg)
 
