@@ -69,14 +69,17 @@ class array(object):
             return self
 
         # Create new array function with changed indexing
+        tmp_f = self.fun
+        tmp_shape = self.shape
+        
         def new_fun(*nargs):
             ndim = len(shape)
             index = nargs[:ndim]
             args = nargs[ndim:]
             prev_index = to_shape_index(
                 to_flat_index(index, shape, order=order),
-                self.shape, order=order)
-            return self.fun(*prev_index, *args)
+                tmp_shape, order=order)
+            return tmp_f(*prev_index, *args)
 
         return self.__class__(shape, new_fun, *self.args)
 
