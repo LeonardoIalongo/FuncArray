@@ -59,10 +59,14 @@ class array(object):
         :param order: C or Fortran-like index order.
         :type order: {'C', 'F'}, optional.
         """
+        if isinstance(shape, int):
+            shape = (shape,)
+        else:
+            shape = tuple(shape)
         
         # Ensure shape is compatible
         if np.prod(shape) != self.size:
-            raise ValueError('Cannot reshape array of size {} into shape {}'
+            raise ValueError('Cannot reshape array of size {} into shape {}.'
                              .format(self.size, shape))
 
         if shape == self.shape:

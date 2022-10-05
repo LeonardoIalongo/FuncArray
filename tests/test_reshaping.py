@@ -164,12 +164,16 @@ class TestReshape():
             new_index = to_shape_index(pos - size, shape, order='F')
             assert index == new_index
 
-    # def test_incompatible_shapes(self):
-    #     def foo(i):
-    #         return float(i)
+    def test_incompatible_shapes(self):
+        def foo(i):
+            return float(i)
 
-    #     a = array(N**3, foo)
-    #     assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
+        a = array(N**3, foo)
+        msg = 'Cannot reshape array of size 1000 into shape (10, 10).'
+        with pytest.raises(ValueError, match=re.escape(msg)):
+            a.reshape((N, N))
+        with pytest.raises(ValueError, match=re.escape(msg)):
+            a.shape = (N, N)
 
     def test_1d_to_2d(self):
         def foo(i):
@@ -180,6 +184,16 @@ class TestReshape():
         # Test in place reshape
         a.shape = (N, N)
         assert np.all(a.to_numpy() == range_arr)
+
+    def test_2d_to_1d(self):
+        def foo(i, j):
+            return float(i*N + j)
+        a = array((N, N), foo)
+        assert np.all(a.reshape(N**2).to_numpy() == np.arange(N**2))
+
+        # Test in place reshape
+        a.shape = N**2
+        assert np.all(a.to_numpy() == np.arange(N**2))
 
 
 class TestCompletion():
