@@ -39,13 +39,23 @@ class array(object):
             yield self[r, :]
 
     def __getitem__(self, index):
+        # Ensure index is compatible with shape
         if isinstance(index, int):
-            if self.ndim == 1:
-                return self.fun(index, *self.args)
-
-        for s in index:
-            if isinstance(s, slice):
+            index = (index,)
+        
+        for i in index:
+            if isinstance(i, slice):
                 raise ValueError('Slicing not yet supported.')
+
+        if np.any([(i >= s) or (-i > s) for i, s in zip(index, self.shape)]):
+            msg = 'Index {} out of bounds for shape {}.'.format(
+                index, self.shape)
+            raise IndexError(msg)
+
+        # If index is negative convert it to positive equivalent
+        index = tuple([s + i if i < 0 else i 
+                       for i, s in zip(index, self.shape)])
+
         return self.fun(*index, *self.args)
 
     def set_shape(self, shape):

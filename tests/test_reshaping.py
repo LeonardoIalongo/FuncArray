@@ -257,7 +257,7 @@ class TestSlicing():
         a = array(N**2, foo)
 
         assert np.all([a[i] == i for i in range(N**2)])
-        assert np.all([a[i-N] == i for i in range(N**2)])
+        assert np.all([a[i-N**2] == i for i in range(N**2)])
 
     def test_single_element_2d(self):
         def foo(i, j):
