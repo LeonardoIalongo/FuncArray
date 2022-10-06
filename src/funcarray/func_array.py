@@ -11,16 +11,22 @@ class array(object):
     iterating over its elements. It also allows to have arrays that would not 
     fit in memory but can be handled as if they were.
     """
-    def __init__(self, shape, fun, *args):
+    def __init__(self, shape, fun, *args, order='C'):
         """Return a FuncArray object. 
 
+        :param shape: number of elements of each dimension of the array.
+        :type shape: tuple of ints.
         :param fun: function that computes each element of the array.
-        :type T: function.
+        :type fun: function.
         :param args: arguments necessary for fun to be computed.
+        :type args: any, optional.
+        :param order: C or Fortran-like index order, relevant only for reshape.
+        :type order: {'C', 'F'}, optional.
         """
 
         self.fun = fun
         self.args = args
+        self.order = order
         if isinstance(shape, int):
             self._shape = (shape,)
         else:
@@ -81,19 +87,11 @@ class array(object):
             index = nargs[:ndim]
             args = nargs[ndim:]
             prev_index = to_shape_index(
-                to_flat_index(index, shape, order=order),
+                to_flat_index(index, shape, order=self.order),
                 tmp_shape, order=order)
             return tmp_f(*prev_index, *args)
 
         return self.__class__(shape, new_fun, *self.args)
-
-    def sum(self):
-        """ Sum all elements of the array.
-        """
-        res = 0
-        for index in np.ndindex(self.shape):
-            res += self.fun(*index, *self.args)
-        return res
 
     def to_numpy(self):
         """ Return a numpy copy of the array.
@@ -101,4 +99,12 @@ class array(object):
         res = np.empty(self.shape)
         for index in np.ndindex(self.shape):
             res[index] = self.fun(*index, *self.args)
+        return res
+        
+    def sum(self):
+        """ Sum all elements of the array.
+        """
+        res = 0
+        for index in np.ndindex(self.shape):
+            res += self.fun(*index, *self.args)
         return res

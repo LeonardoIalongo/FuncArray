@@ -295,6 +295,8 @@ class TestSlicing():
         assert np.all(a[:3, 5:].to_numpy() == range_arr[:3, 5:])
         assert np.all(a[:, :].to_numpy() == range_arr)
         assert np.all(a[0:6:2, 3:7:3].to_numpy() == range_arr[0:6:2, 3:7:3])
+        assert np.all(a[0].to_numpy() == range_arr[0])
+        assert np.all(a[:, 0].to_numpy() == range_arr[:, 0])
 
     def test_range_3d(self):
         def foo(i, j, k):
@@ -309,6 +311,9 @@ class TestSlicing():
         assert np.all(a[0, 2:5, :3].to_numpy() == test_arr[0, 2:5, :3])
         assert np.all(a[0, 2:, :3].to_numpy() == test_arr[0, 2:, :3])
         assert np.all(a[:, 2:, :3].to_numpy() == test_arr[:, 2:, :3])
+        assert np.all(a[3].to_numpy() == test_arr[3])
+        assert np.all(a[3, 2].to_numpy() == test_arr[3, 2])
+        assert np.all(a[:, 3, 2].to_numpy() == test_arr[:, 3, 2])
         assert np.all(a[::3, 2::2, :8:4].to_numpy() 
                       == test_arr[::3, 2::2, :8:4])
 
