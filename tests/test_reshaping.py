@@ -439,6 +439,24 @@ class TestIteration():
         for x, y in zip(a, np.arange(N**3).reshape((N, N, N), order='F')):
             assert np.all(x == y)
 
+    def test_nested_iter(self):
+        def foo(i, j, k):
+            return float(i*N**2 + j*N + k)
+
+        # C ordering
+        a = array((N, N, N), foo, order='C')
+        for x0, y0 in zip(a, np.arange(N**3).reshape((N, N, N), order='C')):
+            for x1, y1 in zip(x0, y0):
+                for x2, y2 in zip(x1, y1):
+                    assert x2 == y2
+        
+        # F ordering
+        a = array((N, N, N), foo, order='F')
+        for x0, y0 in zip(a, np.arange(N**3).reshape((N, N, N), order='F')):
+            for x1, y1 in zip(x0, y0):
+                for x2, y2 in zip(x1, y1):
+                    assert x2 == y2
+
 
 class TestCompletion():
     def test_zero_fill(self):
