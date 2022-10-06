@@ -39,11 +39,14 @@ class array(object):
             yield self[r, :]
 
     def __getitem__(self, index):
-        if not isinstance(index, int):
-            for s in index:
-                if isinstance(s, slice):
-                    raise ValueError('Slicing not yet supported.')
-            return self.fun(*index, *self.args)
+        if isinstance(index, int):
+            if self.ndim == 1:
+                return self.fun(index, *self.args)
+
+        for s in index:
+            if isinstance(s, slice):
+                raise ValueError('Slicing not yet supported.')
+        return self.fun(*index, *self.args)
 
     def set_shape(self, shape):
         """See `reshape`."""
@@ -81,17 +84,17 @@ class array(object):
         # Create new array function with changed indexing
         tmp_f = self.fun
         tmp_shape = self.shape
-        
+
         def new_fun(*nargs):
             ndim = len(shape)
             index = nargs[:ndim]
             args = nargs[ndim:]
             prev_index = to_shape_index(
-                to_flat_index(index, shape, order=self.order),
+                to_flat_index(index, shape, order=order),
                 tmp_shape, order=order)
             return tmp_f(*prev_index, *args)
 
-        return self.__class__(shape, new_fun, *self.args)
+        return self.__class__(shape, new_fun, *self.args, order=order)
 
     def to_numpy(self):
         """ Return a numpy copy of the array.
@@ -100,7 +103,7 @@ class array(object):
         for index in np.ndindex(self.shape):
             res[index] = self.fun(*index, *self.args)
         return res
-        
+
     def sum(self):
         """ Sum all elements of the array.
         """
