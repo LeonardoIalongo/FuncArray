@@ -273,7 +273,7 @@ class TestSlicing():
         assert np.all([a[i, j, k] == i*N**2 + j*N + k 
                       for i in range(N) for j in range(N) for k in range(N)])
 
-    def test_single_range_1d(self):
+    def test_range_1d(self):
         def foo(i):
             return float(i)
         a = array(N**2, foo)
@@ -282,8 +282,9 @@ class TestSlicing():
         assert np.all([a[:5].to_numpy() == np.arange(5)])
         assert np.all([a[2:].to_numpy() == np.arange(2, N**2)])
         assert np.all([a[:].to_numpy() == np.arange(N**2)])
+        assert np.all([a[2:50:4].to_numpy() == np.arange(2, 50, 4)])
 
-    def test_single_range_2d(self):
+    def test_range_2d(self):
         def foo(i, j):
             return float(i*N + j)
         a = array((N, N), foo)
@@ -293,8 +294,9 @@ class TestSlicing():
         assert np.all(a[0:3, 5:6].to_numpy() == range_arr[0:3, 5:6])
         assert np.all(a[:3, 5:].to_numpy() == range_arr[:3, 5:])
         assert np.all(a[:, :].to_numpy() == range_arr)
+        assert np.all(a[0:6:2, 3:7:3].to_numpy() == range_arr[0:6:2, 3:7:3])
 
-    def test_single_range_3d(self):
+    def test_range_3d(self):
         def foo(i, j, k):
             return float(i*N**2 + j*N + k)
         a = array((N, N, N), foo)
@@ -307,7 +309,46 @@ class TestSlicing():
         assert np.all(a[0, 2:5, :3].to_numpy() == test_arr[0, 2:5, :3])
         assert np.all(a[0, 2:, :3].to_numpy() == test_arr[0, 2:, :3])
         assert np.all(a[:, 2:, :3].to_numpy() == test_arr[:, 2:, :3])
-        
+        assert np.all(a[::3, 2::2, :8:4].to_numpy() 
+                      == test_arr[::3, 2::2, :8:4])
+
+    def test_negative_range_1d(self):
+        def foo(i):
+            return float(i)
+        a = array(N**2, foo)
+
+        assert np.all([a[-5:-2].to_numpy() == np.arange(N**2)[-5:-2]])
+        assert np.all([a[-2:-5:-1].to_numpy() == np.arange(N**2)[-2:-5:-1]])
+        assert np.all([a[:-5].to_numpy() == np.arange(N**2)[:-5]])
+        assert np.all([a[-2:].to_numpy() == np.arange(N**2)[-2:]])
+        assert np.all([a[::-1].to_numpy() == np.arange(N**2)[::-1]])
+
+    def test_negative_range_2d(self):
+        def foo(i, j):
+            return float(i*N + j)
+        a = array((N, N), foo)
+
+        assert np.all(a[0, -5:-2].to_numpy() == range_arr[0, -5:-2])
+        assert np.all(a[0:3, -2:-5:-1].to_numpy() == range_arr[0:3, -2:-5:-1])
+        assert np.all(a[:-3, -5:-8:-2].to_numpy() == range_arr[:-3, -5:-8:-2])
+        assert np.all(a[::-1, ::-1].to_numpy() == range_arr[::-1, ::-1])
+
+    def test_negative_range_3d(self):
+        def foo(i, j, k):
+            return float(i*N**2 + j*N + k)
+        a = array((N, N, N), foo)
+
+        test_arr = np.arange(N**3).reshape((N, N, N))
+
+        assert np.all(a[0, 0, -5:-2].to_numpy() == test_arr[0, 0, -5:-2])
+        assert np.all(a[0, -2:-5:-1, 0].to_numpy() == test_arr[0, -2:-5:-1, 0])
+        assert np.all(a[2:5, :-3, -5:-8:-2].to_numpy() 
+                      == test_arr[2:5, :-3, -5:-8:-2])
+        assert np.all(a[-7:-5, :-3, -5:-8:-2].to_numpy() 
+                      == test_arr[-7:-5, :-3, -5:-8:-2])
+        assert np.all(a[::-1, ::-1, ::-1].to_numpy() 
+                      == test_arr[::-1, ::-1, ::-1])
+
 
 class TestCompletion():
     def test_zero_fill(self):
