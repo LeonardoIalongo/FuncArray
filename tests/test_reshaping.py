@@ -179,13 +179,19 @@ class TestReshape():
         def foo(i):
             return float(i)
         a = array(N**2, foo)
+
+        # C order
         assert np.all(a.reshape((N, N)).to_numpy() == range_arr)
+
+        # F order
+        assert np.all(a.reshape((N, N), order='F').to_numpy() == range_arr.T)
 
         # Test in place reshape
         a.shape = (N, N)
         assert np.all(a.to_numpy() == range_arr)
 
     def test_2d_to_1d(self):
+        # C order
         def foo(i, j):
             return float(i*N + j)
         a = array((N, N), foo)
@@ -194,6 +200,54 @@ class TestReshape():
         # Test in place reshape
         a.shape = N**2
         assert np.all(a.to_numpy() == np.arange(N**2))
+
+        # F order
+        def fii(i, j):
+            return float(i + j*N)
+        a = array((N, N), fii)
+        assert np.all(a.reshape(N**2, order='F').to_numpy() == np.arange(N**2))
+
+    def test_1d_coherence(self):
+        def foo(i):
+            return float(i)
+        a = array(N**2, foo)
+
+        # C order
+        assert np.all(a.reshape((N, N)).reshape(N**2).to_numpy() 
+                      == np.arange(N**2))
+
+        # F order
+        assert np.all(a.reshape((N, N), order='F')
+                       .reshape(N**2, order='F').to_numpy() 
+                      == np.arange(N**2))
+
+    def test_2d_coherence(self):
+        def foo(i, j):
+            return float(i*N + j)
+        a = array((N, N), foo)
+
+        # C order
+        assert np.all(a.reshape((N/2, N*2)).reshape((N, N)).to_numpy() 
+                      == a.to_numpy())
+
+        # F order
+        assert np.all(a.reshape((N/2, N*2), order='F')
+                       .reshape((N, N), order='F').to_numpy() 
+                      == a.to_numpy())
+
+    def test_2d_to_3d(self):
+        def foo(i, j):
+            return float(i*N + j)
+        a = array((N, N), foo)
+
+        # C order
+        assert np.all(a.reshape((N/2, N/2, 4)).reshape((N, N)).to_numpy() 
+                      == a.to_numpy())
+
+        # F order
+        assert np.all(a.reshape((N/2, N/2, 4), order='F')
+                       .reshape((N, N), order='F').to_numpy() 
+                      == a.to_numpy())
 
 
 class TestCompletion():
