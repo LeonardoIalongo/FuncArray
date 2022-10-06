@@ -359,16 +359,16 @@ class TestSlicing():
         assert np.all(a[::-1, ::-1, ::-1].to_numpy() 
                       == test_arr[::-1, ::-1, ::-1])
 
-    def test_out_of_bounds_slice_1d(self):
+    def test_out_of_bounds_index_1d(self):
         def foo(i):
             return float(i)
         a = array(N**2, foo)
 
-        msg = 'Index (100, ) out of bounds for shape (100, ).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        msg = 'Index (100,) out of bounds for shape (100,).'
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[100]
-        msg = 'Index (-101, ) out of bounds for shape (100, ).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        msg = 'Index (-101,) out of bounds for shape (100,).'
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[-101]
 
     def test_out_of_bounds_index_2d(self):
@@ -378,10 +378,10 @@ class TestSlicing():
         a = array((N, N), foo)
 
         msg = 'Index (10, 0) out of bounds for shape (10, 10).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[10, 0]
         msg = 'Index (0, -11) out of bounds for shape (10, 10).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[0, -11]
 
     def test_out_of_bounds_index_3d(self):
@@ -391,13 +391,13 @@ class TestSlicing():
         a = array((N, N, N), foo)
 
         msg = 'Index (10, 0, 0) out of bounds for shape (10, 10, 10).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[10, 0, 0]
         msg = 'Index (10, 100, 0) out of bounds for shape (10, 10, 10).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[10, 100, 0]
         msg = 'Index (0, -11, 0) out of bounds for shape (10, 10, 10).'
-        with pytest.raises(ValueError, match=re.escape(msg)):
+        with pytest.raises(IndexError, match=re.escape(msg)):
             a[0, -11, 0]
 
 

@@ -40,7 +40,7 @@ class array(object):
 
     def __getitem__(self, index):
         # Ensure index is compatible with shape
-        if isinstance(index, int):
+        if isinstance(index, int) or isinstance(index, slice):
             index = (index,)
         
         for i in index:
