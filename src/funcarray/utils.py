@@ -5,6 +5,7 @@ def to_flat_index(index, shape, order='C'):
     # Ensure index is compatible with shape
     if isinstance(index, int):
         index = (index,)
+    
     if np.any([(i >= s) or (-i > s) for i, s in zip(index, shape)]):
         msg = 'Index {} out of bounds for shape {}.'.format(index, shape)
         raise IndexError(msg)

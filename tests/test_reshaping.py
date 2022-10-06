@@ -250,6 +250,65 @@ class TestReshape():
                       == a.to_numpy())
 
 
+class TestSlicing():
+    def test_single_element_1d(self):
+        def foo(i):
+            return float(i)
+        a = array(N**2, foo)
+
+        assert np.all([a[i] == i for i in range(N**2)])
+
+    def test_single_element_2d(self):
+        def foo(i, j):
+            return float(i*N + j)
+        a = array((N, N), foo)
+
+        assert np.all([a[i, j] == i*N + j for i in range(N) for j in range(N)])
+
+    def test_single_element_3d(self):
+        def foo(i, j, k):
+            return float(i*N**2 + j*N + k)
+        a = array((N, N, N), foo)
+
+        assert np.all([a[i, j, k] == i*N**2 + j*N + k 
+                      for i in range(N) for j in range(N) for k in range(N)])
+
+    def test_single_range_1d(self):
+        def foo(i):
+            return float(i)
+        a = array(N**2, foo)
+
+        assert np.all([a[2:5].to_numpy() == np.arange(2, 5)])
+        assert np.all([a[:5].to_numpy() == np.arange(5)])
+        assert np.all([a[2:].to_numpy() == np.arange(2, N**2)])
+        assert np.all([a[:].to_numpy() == np.arange(N**2)])
+
+    def test_single_range_2d(self):
+        def foo(i, j):
+            return float(i*N + j)
+        a = array((N, N), foo)
+
+        assert np.all(a[0, 2:5].to_numpy() == range_arr[0, 2:5])
+        assert np.all(a[0:3, 5].to_numpy() == range_arr[0:3, 5])
+        assert np.all(a[0:3, 5:6].to_numpy() == range_arr[0:3, 5:6])
+        assert np.all(a[:3, 5:].to_numpy() == range_arr[:3, 5:])
+        assert np.all(a[:, :].to_numpy() == range_arr)
+
+    def test_single_range_3d(self):
+        def foo(i, j, k):
+            return float(i*N**2 + j*N + k)
+        a = array((N, N, N), foo)
+
+        test_arr = np.arange(N**3).reshape((N, N, N))
+
+        assert np.all(a[0, 0, 2:5].to_numpy() == test_arr[0, 0, 2:5])
+        assert np.all(a[0, 2:5, 0].to_numpy() == test_arr[0, 2:5, 0])
+        assert np.all(a[2:5, 0, 0].to_numpy() == test_arr[2:5, 0, 0])
+        assert np.all(a[0, 2:5, :3].to_numpy() == test_arr[0, 2:5, :3])
+        assert np.all(a[0, 2:, :3].to_numpy() == test_arr[0, 2:, :3])
+        assert np.all(a[:, 2:, :3].to_numpy() == test_arr[:, 2:, :3])
+        
+
 class TestCompletion():
     def test_zero_fill(self):
         def foo(i, j):
