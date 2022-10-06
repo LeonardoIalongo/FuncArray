@@ -396,6 +396,50 @@ class TestSlicing():
             a[0, -11, 0]
 
 
+class TestIteration():
+    def test_1d_iter(self):
+        def foo(i):
+            return float(i)
+
+        # C ordering
+        a = array(N, foo, order='C')
+        for x, y in zip(a, np.arange(N)):
+            assert x == y
+        
+        # F ordering
+        a = array(N, foo, order='F')
+        for x, y in zip(a, np.arange(N)):
+            assert x == y
+
+    def test_2d_iter(self):
+        def foo(i, j):
+            return float(i*N + j)
+
+        # C ordering
+        a = array((N, N), foo, order='C')
+        for x, y in zip(a, np.arange(N**2).reshape((N, N), order='C')):
+            assert np.all(x == y)
+        
+        # F ordering
+        a = array((N, N), foo, order='F')
+        for x, y in zip(a, np.arange(N**2).reshape((N, N), order='F')):
+            assert np.all(x == y)
+
+    def test_3d_iter(self):
+        def foo(i, j, k):
+            return float(i*N**2 + j*N + k)
+
+        # C ordering
+        a = array((N, N, N), foo, order='C')
+        for x, y in zip(a, np.arange(N**3).reshape((N, N, N), order='C')):
+            assert np.all(x == y)
+        
+        # F ordering
+        a = array((N, N, N), foo, order='F')
+        for x, y in zip(a, np.arange(N**3).reshape((N, N, N), order='F')):
+            assert np.all(x == y)
+
+
 class TestCompletion():
     def test_zero_fill(self):
         def foo(i, j):
