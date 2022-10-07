@@ -1,6 +1,7 @@
 import numpy as np
 from .utils import to_shape_index
 from .utils import to_flat_index
+from math import ceil
 
 
 class array(object):
@@ -42,21 +43,86 @@ class array(object):
         # Ensure index is compatible with shape
         if isinstance(index, int) or isinstance(index, slice):
             index = (index,)
+
+        # If index is missing dimensions, assume all elements are selected
+        if len(index) > self.ndim:
+            raise IndexError('Index has {} dimensions instead of {}.'.format(
+                len(index), self.ndim))
+        for i in range(self.ndim - len(index)):
+            index += (slice(None, None, None), )
+
+        # Ensure all elements of index are int or slice
+        if not np.all([isinstance(i, int) or isinstance(i, slice) 
+                      for i in index]):
+            raise IndexError('Index must be int or slice.')
         
-        for i in index:
-            if isinstance(i, slice):
-                raise ValueError('Slicing not yet supported.')
+        # If any index is a slice return new object
+        if np.any([isinstance(i, slice) for i in index]):
+            # Create new array function with changed indexing
+            tmp_f = self.fun
 
-        if np.any([(i >= s) or (-i > s) for i, s in zip(index, self.shape)]):
-            msg = 'Index {} out of bounds for shape {}.'.format(
-                index, self.shape)
-            raise IndexError(msg)
+            # Define new shape
+            new_shape = tuple()
+            for n, i in enumerate(index):
+                if isinstance(i, slice):
+                    if i.start is None:
+                        start = 0
+                    else:
+                        start = i.start
+                    if i.stop is None:
+                        stop = self.shape[n]
+                    else:
+                        stop = i.stop
+                    if i.step is None:
+                        step = 1
+                    else:
+                        step = i.step
 
-        # If index is negative convert it to positive equivalent
-        index = tuple([s + i if i < 0 else i 
-                       for i, s in zip(index, self.shape)])
+                    new_shape += (ceil((stop - start)/step), )
 
-        return self.fun(*index, *self.args)
+            def new_fun(*nargs):
+                ndim = len(new_shape)
+                new_index = nargs[:ndim]
+                args = nargs[ndim:]
+                if isinstance(new_index, int):
+                    new_index = (new_index, )
+                
+                # Convert new index to old one
+                prev_index = tuple()
+                n = 0
+                for i in index:
+                    if isinstance(i, int):
+                        prev_index += (i,)
+                    else:
+                        if i.start is None:
+                            start = 0
+                        else:
+                            start = i.start
+                        if i.step is None:
+                            step = 1
+                        else:
+                            step = i.step
+                        prev_index += (start + new_index[n]*step, )
+                        n += 1
+
+                return tmp_f(*prev_index, *args)
+
+            return self.__class__(
+                new_shape, new_fun, *self.args, order=self.order)
+
+        # else return the queried value
+        else:
+            if np.any([(i >= s) or (-i > s) 
+                      for i, s in zip(index, self.shape)]):
+                msg = 'Index {} out of bounds for shape {}.'.format(
+                    index, self.shape)
+                raise IndexError(msg)
+
+            # If index is negative convert it to positive equivalent
+            index = tuple([s + i if i < 0 else i 
+                           for i, s in zip(index, self.shape)])
+
+            return self.fun(*index, *self.args)
 
     def set_shape(self, shape):
         """See `reshape`."""
