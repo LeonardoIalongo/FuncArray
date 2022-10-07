@@ -37,7 +37,7 @@ class array(object):
 
     def __iter__(self):
         for r in range(self.shape[0]):
-            yield self[r, :]
+            yield self[r]
 
     def __getitem__(self, index):
         # Ensure index is compatible with shape
