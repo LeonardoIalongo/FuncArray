@@ -48,6 +48,7 @@ class array(object):
         if len(index) > self.ndim:
             raise IndexError('Index has {} dimensions instead of {}.'.format(
                 len(index), self.ndim))
+
         for i in range(self.ndim - len(index)):
             index += (slice(None, None, None), )
 

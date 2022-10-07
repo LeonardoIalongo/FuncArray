@@ -417,38 +417,44 @@ class TestIteration():
             assert x == y
 
     def test_2d_iter(self):
+        # C ordering
         def foo(i, j):
             return float(i*N + j)
 
-        # C ordering
         a = array((N, N), foo, order='C')
         for x, y in zip(a, np.arange(N**2).reshape((N, N), order='C')):
-            assert np.all(x == y)
+            assert np.all(x.to_numpy() == y)
         
         # F ordering
+        def foo(i, j):
+            return float(i + j*N)
+
         a = array((N, N), foo, order='F')
         for x, y in zip(a, np.arange(N**2).reshape((N, N), order='F')):
-            assert np.all(x == y)
+            assert np.all(x.to_numpy() == y)
 
     def test_3d_iter(self):
+        # C ordering
         def foo(i, j, k):
             return float(i*N**2 + j*N + k)
 
-        # C ordering
         a = array((N, N, N), foo, order='C')
         for x, y in zip(a, np.arange(N**3).reshape((N, N, N), order='C')):
-            assert np.all(x == y)
+            assert np.all(x.to_numpy() == y)
         
         # F ordering
+        def foo(i, j, k):
+            return float(i + j*N + k*N**2)
+
         a = array((N, N, N), foo, order='F')
         for x, y in zip(a, np.arange(N**3).reshape((N, N, N), order='F')):
-            assert np.all(x == y)
+            assert np.all(x.to_numpy() == y)
 
     def test_nested_iter(self):
+        # C ordering
         def foo(i, j, k):
             return float(i*N**2 + j*N + k)
 
-        # C ordering
         a = array((N, N, N), foo, order='C')
         for x0, y0 in zip(a, np.arange(N**3).reshape((N, N, N), order='C')):
             for x1, y1 in zip(x0, y0):
@@ -456,6 +462,9 @@ class TestIteration():
                     assert x2 == y2
         
         # F ordering
+        def foo(i, j, k):
+            return float(i + j*N + k*N**2)
+            
         a = array((N, N, N), foo, order='F')
         for x0, y0 in zip(a, np.arange(N**3).reshape((N, N, N), order='F')):
             for x1, y1 in zip(x0, y0):
