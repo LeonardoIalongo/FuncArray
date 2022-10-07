@@ -283,11 +283,11 @@ class TestSlicing():
             return float(i)
         a = array(N**2, foo)
 
-        assert np.all([a[2:5].to_numpy() == np.arange(2, 5)])
-        assert np.all([a[:5].to_numpy() == np.arange(5)])
-        assert np.all([a[2:].to_numpy() == np.arange(2, N**2)])
-        assert np.all([a[:].to_numpy() == np.arange(N**2)])
-        assert np.all([a[2:50:4].to_numpy() == np.arange(2, 50, 4)])
+        assert np.all(a[2:5].to_numpy() == np.arange(2, 5))
+        assert np.all(a[:5].to_numpy() == np.arange(5))
+        assert np.all(a[2:].to_numpy() == np.arange(2, N**2))
+        assert np.all(a[:].to_numpy() == np.arange(N**2))
+        assert np.all(a[2:50:4].to_numpy() == np.arange(2, 50, 4))
 
     def test_range_2d(self):
         def foo(i, j):
@@ -327,11 +327,11 @@ class TestSlicing():
             return float(i)
         a = array(N**2, foo)
 
-        assert np.all([a[-5:-2].to_numpy() == np.arange(N**2)[-5:-2]])
-        assert np.all([a[-2:-5:-1].to_numpy() == np.arange(N**2)[-2:-5:-1]])
-        assert np.all([a[:-5].to_numpy() == np.arange(N**2)[:-5]])
-        assert np.all([a[-2:].to_numpy() == np.arange(N**2)[-2:]])
-        assert np.all([a[::-1].to_numpy() == np.arange(N**2)[::-1]])
+        assert np.all(a[-5:-2].to_numpy() == np.arange(N**2)[-5:-2])
+        assert np.all(a[-2:-5:-1].to_numpy() == np.arange(N**2)[-2:-5:-1])
+        assert np.all(a[:-5].to_numpy() == np.arange(N**2)[:-5])
+        assert np.all(a[-2:].to_numpy() == np.arange(N**2)[-2:])
+        assert np.all(a[::-1].to_numpy() == np.arange(N**2)[::-1])
 
     def test_negative_range_2d(self):
         def foo(i, j):
@@ -464,7 +464,7 @@ class TestIteration():
         # F ordering
         def foo(i, j, k):
             return float(i + j*N + k*N**2)
-            
+
         a = array((N, N, N), foo, order='F')
         for x0, y0 in zip(a, np.arange(N**3).reshape((N, N, N), order='F')):
             for x1, y1 in zip(x0, y0):

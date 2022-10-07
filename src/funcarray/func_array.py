@@ -61,6 +61,7 @@ class array(object):
         if np.any([isinstance(i, slice) for i in index]):
             # Create new array function with changed indexing
             tmp_f = self.fun
+            tmp_shape = self.shape
 
             # Define new shape
             new_shape = tuple()
@@ -70,16 +71,20 @@ class array(object):
                         start = 0
                     else:
                         start = i.start
+                        if start < 0:
+                            start += self.shape[n]
                     if i.stop is None:
                         stop = self.shape[n]
                     else:
                         stop = i.stop
+                        if stop < 0:
+                            stop += self.shape[n]
                     if i.step is None:
                         step = 1
                     else:
                         step = i.step
-
-                    new_shape += (ceil((stop - start)/step), )
+                    elem = ceil(abs((stop - start)/step))
+                    new_shape += (elem, )
 
             def new_fun(*nargs):
                 ndim = len(new_shape)
@@ -91,19 +96,26 @@ class array(object):
                 # Convert new index to old one
                 prev_index = tuple()
                 n = 0
-                for i in index:
+                for m, i in enumerate(index):
                     if isinstance(i, int):
                         prev_index += (i,)
                     else:
-                        if i.start is None:
-                            start = 0
-                        else:
-                            start = i.start
                         if i.step is None:
                             step = 1
                         else:
                             step = i.step
-                        prev_index += (start + new_index[n]*step, )
+                        if i.start is None:
+                            if step < 0:
+                                start = -1
+                            else:
+                                start = 0
+                        else:
+                            start = i.start
+                        
+                        pos = start + new_index[n]*step
+                        if pos < 0:
+                            pos += tmp_shape[m]
+                        prev_index += (pos, )
                         n += 1
 
                 return tmp_f(*prev_index, *args)
